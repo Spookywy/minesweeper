@@ -7,7 +7,7 @@ export default function Home() {
     return (
         <main>
             <h1 className="text-4xl text-center font-bold">Minesweeper</h1>
-            <Game></Game>
+            <Game boardHeight={8} boardWidth={8} numberOfMines={10}></Game>
         </main>
     );
 }

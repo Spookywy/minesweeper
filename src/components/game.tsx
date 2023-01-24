@@ -2,23 +2,38 @@
 
 import Board from "./board";
 import { useState } from "react";
+import { CellStatus } from "@/utils/enums";
+import { Cell } from "@/utils/types";
 
-export default function Game() {
-    const [boardHeight, setBoardHeight] = useState(8);
-    const [boardWidth, setBoardWidth] = useState(8);
-    const [numberOfMines, setNumberOfMines] = useState(10);
+type GameProps = {
+    boardHeight: number;
+    boardWidth: number;
+    numberOfMines: number;
+};
+
+export default function Game({
+    boardHeight,
+    boardWidth,
+    numberOfMines,
+}: GameProps) {
+    const initializeBoard = (): Cell[][] => {
+        return Array(boardHeight).fill(
+            Array(boardWidth).fill({
+                status: CellStatus.Hidden,
+                isMined: false,
+            })
+        );
+    };
+
+    const [board, setBoard] = useState(initializeBoard());
 
     return (
-        <div>
+        <div className="flex flex-col items-center">
             <p>
                 Board settings: {boardHeight.toString()}x{boardWidth.toString()}{" "}
                 - {numberOfMines.toString()} mines
             </p>
-            <Board
-                boardHeight={boardHeight}
-                boardWidth={boardWidth}
-                numberOfMines={numberOfMines}
-            ></Board>
+            <Board board={board}></Board>
         </div>
     );
 }
