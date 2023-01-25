@@ -19,6 +19,8 @@ export default function Game({
     boardWidth,
     numberOfMines,
 }: GameProps) {
+    const [gameInProgress, setGameInProgress] = useState(false);
+
     const createBoard = (): Cell[][] => {
         const initBoard = [...Array(boardHeight)].map(() =>
             [...Array(boardWidth)].map(() => ({
@@ -30,9 +32,11 @@ export default function Game({
         return initBoard;
     };
 
-    const initBoard = () => {
+    const [board, setBoard] = useState(createBoard());
+
+    const initBoard = (cellX: number, cellY: number) => {
         let initBoard = [...board];
-        const minesLocations = generateMinesLocation();
+        const minesLocations = generateMinesLocation(cellX, cellY);
         for (let i = 0; i < minesLocations.length; i++) {
             let x = minesLocations[i][0];
             let y = minesLocations[i][1];
@@ -42,13 +46,21 @@ export default function Game({
         setBoard(initBoard);
     };
 
-    const generateMinesLocation = (): number[][] => {
+    const generateMinesLocation = (
+        cellX: number,
+        cellY: number
+    ): number[][] => {
         const possibleLocations = [...Array(boardHeight * boardWidth)].map(
             (x, index) => [
                 (index - (index % boardHeight)) / boardHeight,
                 index % boardHeight,
             ]
         );
+
+        // Remove the first cell revealed from possible mines location
+        const loc = cellX * boardWidth + cellY;
+        possibleLocations.splice(loc, 1);
+
         const pickedLocations = Array();
         for (let i = 0; i < numberOfMines; i++) {
             const location = Math.floor(
@@ -84,12 +96,14 @@ export default function Game({
         cellX: number,
         cellY: number
     ) => {
+        if (!gameInProgress) {
+            initBoard(cellX, cellY);
+            setGameInProgress(true);
+        }
         let modifiedBoard = [...board];
         modifiedBoard[cellX][cellY].isVisible = true;
         setBoard(modifiedBoard);
     };
-
-    const [board, setBoard] = useState(createBoard());
 
     return (
         <div className="flex flex-col items-center">
@@ -98,7 +112,6 @@ export default function Game({
                 - {numberOfMines.toString()} mines
             </p>
             <Board board={board} handleCellClick={handleCellClick}></Board>
-            <button onClick={initBoard}>click</button>
         </div>
     );
 }
