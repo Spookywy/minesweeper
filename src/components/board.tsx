@@ -1,5 +1,8 @@
+import dynamic from "next/dynamic";
+const CellDrawing = dynamic(() => import("./cellDrawing"), {
+    ssr: false,
+});
 import { Cell } from "@/utils/types";
-import CellDrawing from "./cellDrawing";
 
 type BoardProps = {
     board: Cell[][];
@@ -15,8 +18,7 @@ export default function Board({ board }: BoardProps) {
                             return (
                                 <CellDrawing
                                     key={rowIndex + "-" + cellIndex}
-                                    status={cell.status}
-                                    onClick={() => console.log("clicked")}
+                                    cell={cell}
                                 ></CellDrawing>
                             );
                         })}
