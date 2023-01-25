@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 const Board = dynamic(() => import("./board"), {
     ssr: false,
 });
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Cell } from "@/utils/types";
 import { MouseEvent } from "react";
 
@@ -20,6 +20,8 @@ export default function Game({
     numberOfMines,
 }: GameProps) {
     const [gameInProgress, setGameInProgress] = useState(false);
+    const [mines, setMines] = useState(Array());
+    const [numberOfRevealedCell, setNumberOfRevealedCell] = useState(0);
 
     const createBoard = (): Cell[][] => {
         const initBoard = [...Array(boardHeight)].map(() =>
@@ -37,6 +39,8 @@ export default function Game({
     const initBoard = (cellX: number, cellY: number) => {
         let initBoard = [...board];
         const minesLocations = generateMinesLocation(cellX, cellY);
+        setMines(minesLocations);
+
         for (let i = 0; i < minesLocations.length; i++) {
             let x = minesLocations[i][0];
             let y = minesLocations[i][1];
@@ -62,6 +66,7 @@ export default function Game({
                 (elem) => elem[0] === locationX && elem[1] === locationY
             );
             if (newLocationIsProtected) continue;
+            protectedArea.push([locationX, locationY]);
             pickedLocations.push([locationX, locationY]);
         }
         return pickedLocations;
@@ -104,29 +109,64 @@ export default function Game({
             initBoard(cellX, cellY);
             setGameInProgress(true);
         }
+        if (board[cellX][cellY].isMined) looseParty();
+        if (board[cellX][cellY].isVisible) return;
+
         let modifiedBoard = [...board];
-        revealNeighbours(modifiedBoard, cellX, cellY);
+
+        let nbOfCellRevealedThisRound = revealCells(
+            modifiedBoard,
+            cellX,
+            cellY
+        );
+        setNumberOfRevealedCell(
+            numberOfRevealedCell + nbOfCellRevealedThisRound
+        );
+
         setBoard(modifiedBoard);
     };
 
-    const revealNeighbours = (
+    const revealCells = (
         board: Cell[][],
         cellX: number,
         cellY: number
-    ) => {
+    ): number => {
         const currentCell = board[cellX][cellY];
-        if (currentCell.isMined) return;
+        if (currentCell.isMined) return 0;
 
+        let nbOfCellRevealed = 1;
         currentCell.isVisible = true;
 
         if (currentCell.value === 0) {
             const neighbours = getNeighbours(cellX, cellY);
             for (let i = 0; i < neighbours.length; i++) {
                 if (!board[neighbours[i][0]][neighbours[i][1]].isVisible)
-                    revealNeighbours(board, neighbours[i][0], neighbours[i][1]);
+                    nbOfCellRevealed += revealCells(
+                        board,
+                        neighbours[i][0],
+                        neighbours[i][1]
+                    );
             }
         }
+        return nbOfCellRevealed;
     };
+
+    const looseParty = () => {
+        let modifiedBoard = [...board];
+        for (let i = 0; i < mines.length; i++) {
+            modifiedBoard[mines[i][0]][mines[i][1]].isVisible = true;
+        }
+        setBoard(modifiedBoard);
+    };
+
+    const checkWinStatus = () => {
+        if (numberOfRevealedCell === boardHeight * boardWidth - numberOfMines)
+            console.log("You won");
+    };
+
+    useEffect(() => {
+        checkWinStatus();
+    }, [numberOfRevealedCell]);
 
     return (
         <div className="flex flex-col items-center">

@@ -23,10 +23,10 @@ export default function CellDrawing({ cell, onClick }: CellProps) {
     return (
         <div
             className={`${
-                cell.isVisible
-                    ? "bg-zinc-500 hover:bg-zinc-400"
-                    : "bg-green-500 hover:bg-green-400"
-            } rounded-md w-12 h-12 cursor-pointer flex justify-center items-center`}
+                cell.isVisible && !cell.isMined ? "bg-zinc-500" : "bg-green-500"
+            } ${
+                cell.isVisible && cell.isMined ? "bg-rose-500" : ""
+            } hover:opacity-80 rounded-md w-12 h-12 cursor-pointer flex justify-center items-center`}
             onClick={onClick}
             onContextMenu={putFlag}
         >
