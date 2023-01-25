@@ -50,29 +50,32 @@ export default function Game({
         cellX: number,
         cellY: number
     ): number[][] => {
-        const possibleLocations = [...Array(boardHeight * boardWidth)].map(
-            (x, index) => [
-                (index - (index % boardHeight)) / boardHeight,
-                index % boardHeight,
-            ]
-        );
-
-        // Remove the first cell revealed from possible mines location
-        const loc = cellX * boardWidth + cellY;
-        possibleLocations.splice(loc, 1);
-
         const pickedLocations = Array();
-        for (let i = 0; i < numberOfMines; i++) {
-            const location = Math.floor(
-                Math.random() * possibleLocations.length
+        const protectedArea = getNeighbours(cellX, cellY);
+        protectedArea.push([cellX, cellY]);
+
+        while (pickedLocations.length < numberOfMines) {
+            const locationX = Math.floor(Math.random() * boardHeight);
+            const locationY = Math.floor(Math.random() * boardWidth);
+
+            const newLocationIsProtected = protectedArea.find(
+                (elem) => elem[0] === locationX && elem[1] === locationY
             );
-            pickedLocations.push(possibleLocations[location]);
-            possibleLocations.splice(location, 1);
+            if (newLocationIsProtected) continue;
+            pickedLocations.push([locationX, locationY]);
         }
         return pickedLocations;
     };
 
     const warnMinesNeighbours = (initBoard: Cell[][], x: number, y: number) => {
+        const neighbours = getNeighbours(x, y);
+        for (let i = 0; i < neighbours.length; i++) {
+            initBoard[neighbours[i][0]][neighbours[i][1]].value++;
+        }
+    };
+
+    const getNeighbours = (x: number, y: number): number[][] => {
+        const neighbours = Array();
         let combinationsX = [x];
         if (x > 0) combinationsX.push(x - 1);
         if (x < 7) combinationsX.push(x + 1);
@@ -86,9 +89,10 @@ export default function Game({
                 let neignbourX = combinationsX[i];
                 let neignbourY = combinationsY[j];
                 if (neignbourX === x && neignbourY === y) continue;
-                initBoard[neignbourX][neignbourY].value++;
+                neighbours.push([neignbourX, neignbourY]);
             }
         }
+        return neighbours;
     };
 
     const handleCellClick = (
@@ -101,8 +105,27 @@ export default function Game({
             setGameInProgress(true);
         }
         let modifiedBoard = [...board];
-        modifiedBoard[cellX][cellY].isVisible = true;
+        revealNeighbours(modifiedBoard, cellX, cellY);
         setBoard(modifiedBoard);
+    };
+
+    const revealNeighbours = (
+        board: Cell[][],
+        cellX: number,
+        cellY: number
+    ) => {
+        const currentCell = board[cellX][cellY];
+        if (currentCell.isMined) return;
+
+        currentCell.isVisible = true;
+
+        if (currentCell.value === 0) {
+            const neighbours = getNeighbours(cellX, cellY);
+            for (let i = 0; i < neighbours.length; i++) {
+                if (!board[neighbours[i][0]][neighbours[i][1]].isVisible)
+                    revealNeighbours(board, neighbours[i][0], neighbours[i][1]);
+            }
+        }
     };
 
     return (
