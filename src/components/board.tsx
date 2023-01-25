@@ -6,19 +6,27 @@ import { Cell } from "@/utils/types";
 
 type BoardProps = {
     board: Cell[][];
+    handleCellClick: (
+        e: React.MouseEvent<HTMLDivElement>,
+        cellX: number,
+        cellY: number
+    ) => void;
 };
 
-export default function Board({ board }: BoardProps) {
+export default function Board({ board, handleCellClick }: BoardProps) {
     return (
         <div className="bg-black rounded-md p-2">
-            {board.map((row, rowIndex) => {
+            {board.map((row, cellX) => {
                 return (
-                    <div className="flex gap-0.5 mb-0.5" key={rowIndex}>
-                        {row.map((cell, cellIndex) => {
+                    <div className="flex gap-0.5 mb-0.5" key={cellX}>
+                        {row.map((cell, cellY) => {
                             return (
                                 <CellDrawing
-                                    key={rowIndex + "-" + cellIndex}
+                                    key={cellX + "-" + cellY}
                                     cell={cell}
+                                    onClick={(e) =>
+                                        handleCellClick(e, cellX, cellY)
+                                    }
                                 ></CellDrawing>
                             );
                         })}

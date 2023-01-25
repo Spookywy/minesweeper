@@ -1,41 +1,32 @@
-import { CellStatus } from "@/utils/enums";
 import { Cell } from "@/utils/types";
 import { MouseEvent, useState } from "react";
 
 type CellProps = {
     cell: Cell;
+    onClick: (e: React.MouseEvent<HTMLDivElement>) => void;
 };
 
-export default function CellDrawing({ cell }: CellProps) {
-    const [status, setStatus] = useState(CellStatus.Hidden);
+export default function CellDrawing({ cell, onClick }: CellProps) {
+    const [flag, setFlag] = useState(false);
 
-    const displayStatus = (): string => {
-        if (cell.isMined) return "💣";
-        switch (status) {
-            case CellStatus.Flagged:
-                return "🚩";
-            case CellStatus.RevealedMined:
-                return "💣";
-            default:
-                return cell.value === 0 ? "" : cell.value.toString();
-        }
-    };
-
-    const onClick = (event: MouseEvent<HTMLElement>) => {
-        if (cell.isMined) console.log("Lost");
+    const displayStatus = (): string | undefined => {
+        if (cell.isVisible && cell.isMined) return "💣";
+        if (cell.isVisible && cell.value > 0) return cell.value.toString();
+        if (flag) return "🚩";
     };
 
     const putFlag = (event: MouseEvent<HTMLElement>) => {
         event.preventDefault();
-        if ([CellStatus.Hidden, CellStatus.Flagged].includes(status))
-            status === CellStatus.Hidden
-                ? setStatus(CellStatus.Flagged)
-                : setStatus(CellStatus.Hidden);
+        if (!cell.isVisible) setFlag(!flag);
     };
 
     return (
         <div
-            className="bg-green-500 hover:bg-green-400 rounded-md w-12 h-12 cursor-pointer flex justify-center items-center"
+            className={`${
+                cell.isVisible
+                    ? "bg-zinc-500 hover:bg-zinc-400"
+                    : "bg-green-500 hover:bg-green-400"
+            } rounded-md w-12 h-12 cursor-pointer flex justify-center items-center`}
             onClick={onClick}
             onContextMenu={putFlag}
         >
