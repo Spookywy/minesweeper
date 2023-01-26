@@ -31,7 +31,7 @@ export default function CellDrawing({
                 cell.isVisible && !cell.isMined ? "bg-zinc-500" : "bg-green-500"
             } ${
                 cell.isVisible && cell.isMined ? "bg-rose-500" : ""
-            } hover:opacity-80 rounded-md w-12 h-12 cursor-pointer flex justify-center items-center`}
+            } hover:opacity-80 rounded-md w-6 h-6 cursor-pointer flex justify-center items-center`}
             onClick={onClick}
             onContextMenu={onContextMenu}
         >

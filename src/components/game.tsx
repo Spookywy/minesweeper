@@ -1,5 +1,3 @@
-"use client";
-
 import dynamic from "next/dynamic";
 const Board = dynamic(() => import("./board"), {
     ssr: false,
@@ -207,11 +205,15 @@ export default function Game({
         checkWinStatus();
     }, [numberOfRevealedCell]);
 
+    useEffect(() => {
+        startNewGame();
+    }, [boardHeight, boardWidth, numberOfMines]);
+
     return (
         <div className="flex flex-col items-center">
             <p>
-                Board settings: {boardHeight.toString()}x{boardWidth.toString()}{" "}
-                - {numberOfMines.toString()} mines
+                Current board settings: {boardHeight.toString()}x
+                {boardWidth.toString()} - {numberOfMines.toString()} mines
             </p>
             <Board
                 board={board}
@@ -221,7 +223,7 @@ export default function Game({
             {gameStatus !== GameStatus.ReadyToStart && (
                 <button onClick={startNewGame}>Start a new game</button>
             )}
-            {gameWon && <p>🎉🎉Congratulations! You won!🎉🎉</p>}
+            {gameWon && <p>🎉 Congratulations! You won! 🎉</p>}
         </div>
     );
 }
