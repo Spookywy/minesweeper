@@ -211,19 +211,29 @@ export default function Game({
 
     return (
         <div className="flex flex-col items-center">
-            <p>
-                Current board settings: {boardHeight.toString()}x
-                {boardWidth.toString()} - {numberOfMines.toString()} mines
-            </p>
             <Board
                 board={board}
                 handleCellClick={handleCellClick}
                 handleContextMenu={handleCellContextMenu}
             ></Board>
-            {gameStatus !== GameStatus.ReadyToStart && (
-                <button onClick={startNewGame}>Start a new game</button>
+            <p className="mb-2">
+                {boardHeight.toString()}x{boardWidth.toString()} -{" "}
+                {numberOfMines.toString()} mines
+            </p>
+            {gameWon && (
+                <p className="font-bold">🎉 Congratulations! You won! 🎉</p>
             )}
-            {gameWon && <p>🎉 Congratulations! You won! 🎉</p>}
+            {gameStatus === GameStatus.Over && !gameWon && (
+                <p className="font-bold">😭 You lost! 😭</p>
+            )}
+            {gameStatus !== GameStatus.ReadyToStart && (
+                <button
+                    className="border-2 border-black rounded-lg p-2 mt-2 font-bold hover:bg-black hover:text-white"
+                    onClick={startNewGame}
+                >
+                    Start a new game
+                </button>
+            )}
         </div>
     );
 }

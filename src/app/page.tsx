@@ -29,16 +29,29 @@ export default function Home() {
             <h1 className="text-4xl text-center font-bold">Minesweeper</h1>
             <p className="mt-3 mb-3">
                 The code is available on GitHub{" "}
-                <a href="https://github.com/Spookywy/minesweeper">here</a>.
+                <a
+                    className="text-blue-500"
+                    href="https://github.com/Spookywy/minesweeper"
+                >
+                    here
+                </a>
+                .
             </p>
-            <select onChange={changeDifficultySettings}>
-                {Array.from(gameSettings.entries()).map(
-                    ([difficulty, _], index) => {
-                        return <option key={index}>{difficulty}</option>;
-                    }
-                )}
-            </select>
-            <Game boardHeight={16} boardWidth={16} numberOfMines={40}></Game>
+            <div className="flex pb-3">
+                <p className="font-bold">Difficulty: </p>
+                <select onChange={changeDifficultySettings}>
+                    {Array.from(gameSettings.entries()).map(
+                        ([difficulty, _], index) => {
+                            return <option key={index}>{difficulty}</option>;
+                        }
+                    )}
+                </select>
+            </div>
+            <Game
+                boardHeight={boardHeight}
+                boardWidth={boardWidth}
+                numberOfMines={numberOfMines}
+            ></Game>
         </main>
     );
 }
