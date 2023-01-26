@@ -11,9 +11,18 @@ type BoardProps = {
         cellX: number,
         cellY: number
     ) => void;
+    handleContextMenu: (
+        e: React.MouseEvent<HTMLDivElement>,
+        cellX: number,
+        cellY: number
+    ) => void;
 };
 
-export default function Board({ board, handleCellClick }: BoardProps) {
+export default function Board({
+    board,
+    handleCellClick,
+    handleContextMenu,
+}: BoardProps) {
     return (
         <div className="bg-black rounded-md p-2">
             {board.map((row, cellX) => {
@@ -24,6 +33,9 @@ export default function Board({ board, handleCellClick }: BoardProps) {
                                 <CellDrawing
                                     key={cellX + "-" + cellY}
                                     cell={cell}
+                                    onContextMenu={(e) =>
+                                        handleContextMenu(e, cellX, cellY)
+                                    }
                                     onClick={(e) =>
                                         handleCellClick(e, cellX, cellY)
                                     }

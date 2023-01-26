@@ -7,6 +7,7 @@ const Board = dynamic(() => import("./board"), {
 import { useState, useEffect } from "react";
 import { Cell } from "@/utils/types";
 import { MouseEvent } from "react";
+import { GameStatus } from "@/utils/enum";
 
 type GameProps = {
     boardHeight: number;
@@ -19,7 +20,8 @@ export default function Game({
     boardWidth,
     numberOfMines,
 }: GameProps) {
-    const [gameInProgress, setGameInProgress] = useState(false);
+    const [gameStatus, setGameStatus] = useState(GameStatus.ReadyToStart);
+    const [gameWon, setGameWon] = useState(false);
     const [mines, setMines] = useState(Array());
     const [numberOfRevealedCell, setNumberOfRevealedCell] = useState(0);
 
@@ -29,6 +31,7 @@ export default function Game({
                 value: 0,
                 isMined: false,
                 isVisible: false,
+                isFlagged: false,
             }))
         );
         return initBoard;
@@ -36,18 +39,27 @@ export default function Game({
 
     const [board, setBoard] = useState(createBoard());
 
+    const startNewGame = () => {
+        setGameStatus(GameStatus.ReadyToStart);
+        setNumberOfRevealedCell(0);
+        setGameWon(false);
+        setBoard(createBoard());
+    };
+
     const initBoard = (cellX: number, cellY: number) => {
-        let initBoard = [...board];
+        let modifiedBoard = [...board];
+
         const minesLocations = generateMinesLocation(cellX, cellY);
         setMines(minesLocations);
 
         for (let i = 0; i < minesLocations.length; i++) {
             let x = minesLocations[i][0];
             let y = minesLocations[i][1];
-            initBoard[x][y].isMined = true;
-            warnMinesNeighbours(initBoard, x, y);
+            modifiedBoard[x][y].isMined = true;
+            warnMinesNeighbours(modifiedBoard, x, y);
         }
-        setBoard(initBoard);
+
+        setBoard(modifiedBoard);
     };
 
     const generateMinesLocation = (
@@ -65,15 +77,19 @@ export default function Game({
             const newLocationIsProtected = protectedArea.find(
                 (elem) => elem[0] === locationX && elem[1] === locationY
             );
+
             if (newLocationIsProtected) continue;
+
             protectedArea.push([locationX, locationY]);
             pickedLocations.push([locationX, locationY]);
         }
+
         return pickedLocations;
     };
 
     const warnMinesNeighbours = (initBoard: Cell[][], x: number, y: number) => {
         const neighbours = getNeighbours(x, y);
+
         for (let i = 0; i < neighbours.length; i++) {
             initBoard[neighbours[i][0]][neighbours[i][1]].value++;
         }
@@ -81,6 +97,7 @@ export default function Game({
 
     const getNeighbours = (x: number, y: number): number[][] => {
         const neighbours = Array();
+
         let combinationsX = [x];
         if (x > 0) combinationsX.push(x - 1);
         if (x < 7) combinationsX.push(x + 1);
@@ -97,6 +114,7 @@ export default function Game({
                 neighbours.push([neignbourX, neignbourY]);
             }
         }
+
         return neighbours;
     };
 
@@ -105,24 +123,41 @@ export default function Game({
         cellX: number,
         cellY: number
     ) => {
-        if (!gameInProgress) {
+        if (gameStatus === GameStatus.ReadyToStart) {
             initBoard(cellX, cellY);
-            setGameInProgress(true);
+            setGameStatus(GameStatus.InProgress);
         }
-        if (board[cellX][cellY].isMined) looseParty();
+        if (gameStatus === GameStatus.Over) return;
+
         if (board[cellX][cellY].isVisible) return;
+        if (board[cellX][cellY].isMined) looseParty();
 
         let modifiedBoard = [...board];
-
         let nbOfCellRevealedThisRound = revealCells(
             modifiedBoard,
             cellX,
             cellY
         );
+
         setNumberOfRevealedCell(
             numberOfRevealedCell + nbOfCellRevealedThisRound
         );
+        setBoard(modifiedBoard);
+    };
 
+    const handleCellContextMenu = (
+        event: MouseEvent<HTMLElement>,
+        cellX: number,
+        cellY: number
+    ) => {
+        event.preventDefault();
+
+        const currentCell = board[cellX][cellY];
+        if (gameStatus !== GameStatus.InProgress || currentCell.isVisible)
+            return;
+
+        let modifiedBoard = [...board];
+        modifiedBoard[cellX][cellY].isFlagged = !currentCell.isFlagged;
         setBoard(modifiedBoard);
     };
 
@@ -134,8 +169,8 @@ export default function Game({
         const currentCell = board[cellX][cellY];
         if (currentCell.isMined) return 0;
 
-        let nbOfCellRevealed = 1;
         currentCell.isVisible = true;
+        let nbOfCellRevealed = 1;
 
         if (currentCell.value === 0) {
             const neighbours = getNeighbours(cellX, cellY);
@@ -157,11 +192,15 @@ export default function Game({
             modifiedBoard[mines[i][0]][mines[i][1]].isVisible = true;
         }
         setBoard(modifiedBoard);
+
+        setGameStatus(GameStatus.Over);
     };
 
     const checkWinStatus = () => {
-        if (numberOfRevealedCell === boardHeight * boardWidth - numberOfMines)
-            console.log("You won");
+        if (numberOfRevealedCell === boardHeight * boardWidth - numberOfMines) {
+            setGameWon(true);
+            setGameStatus(GameStatus.Over);
+        }
     };
 
     useEffect(() => {
@@ -174,7 +213,15 @@ export default function Game({
                 Board settings: {boardHeight.toString()}x{boardWidth.toString()}{" "}
                 - {numberOfMines.toString()} mines
             </p>
-            <Board board={board} handleCellClick={handleCellClick}></Board>
+            <Board
+                board={board}
+                handleCellClick={handleCellClick}
+                handleContextMenu={handleCellContextMenu}
+            ></Board>
+            {gameStatus !== GameStatus.ReadyToStart && (
+                <button onClick={startNewGame}>Start a new game</button>
+            )}
+            {gameWon && <p>🎉🎉Congratulations! You won!🎉🎉</p>}
         </div>
     );
 }
