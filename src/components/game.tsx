@@ -98,11 +98,11 @@ export default function Game({
 
         let combinationsX = [x];
         if (x > 0) combinationsX.push(x - 1);
-        if (x < 7) combinationsX.push(x + 1);
+        if (x < boardHeight - 1) combinationsX.push(x + 1);
 
         let combinationsY = [y];
         if (y > 0) combinationsY.push(y - 1);
-        if (y < 7) combinationsY.push(y + 1);
+        if (y < boardWidth - 1) combinationsY.push(y + 1);
 
         for (let i = 0; i < combinationsX.length; i++) {
             for (let j = 0; j < combinationsY.length; j++) {

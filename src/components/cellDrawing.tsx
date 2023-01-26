@@ -15,7 +15,7 @@ export default function CellDrawing({
     const [flag, setFlag] = useState(false);
 
     const displayStatus = (): string | undefined => {
-        if (cell.isVisible && cell.isMined) return "💣";
+        if (cell.isMined) return "💣";
         if (cell.isVisible && cell.value > 0) return cell.value.toString();
         if (cell.isFlagged) return "🚩";
     };

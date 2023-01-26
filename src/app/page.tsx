@@ -38,11 +38,7 @@ export default function Home() {
                     }
                 )}
             </select>
-            <Game
-                boardHeight={boardHeight}
-                boardWidth={boardWidth}
-                numberOfMines={numberOfMines}
-            ></Game>
+            <Game boardHeight={16} boardWidth={16} numberOfMines={40}></Game>
         </main>
     );
 }
