@@ -23,21 +23,13 @@ export default function Home() {
   };
 
   return (
-    <main className="text-center">
-      <h1 className="text-4xl text-center font-bold">Minesweeper</h1>
-      <p className="mt-3 mb-3">
-        The code is available on GitHub{" "}
-        <a
-          className="text-blue-500"
-          href="https://github.com/Spookywy/minesweeper"
-        >
-          here
-        </a>
-        .
-      </p>
-      <div className="flex justify-center mb-3">
-        <p className="font-bold">Difficulty: </p>
-        <select onChange={changeDifficultySettings}>
+    <main className="text-center m-4">
+      <h1 className="bg-gradient-to-r bg-clip-text text-4xl font-bold text-transparent from-green-500 to-yellow-500">
+        Minesweeper
+      </h1>
+      <div className="flex justify-center my-5">
+        <p className="font-bold mr-3">Difficulty:</p>
+        <select onChange={changeDifficultySettings} className="text-black">
           {Array.from(gameSettings.entries()).map(([difficulty, _], index) => {
             return <option key={index}>{difficulty}</option>;
           })}

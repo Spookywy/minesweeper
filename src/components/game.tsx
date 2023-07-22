@@ -219,7 +219,7 @@ export default function Game({
       )}
       {gameStatus !== GameStatus.ReadyToStart && (
         <button
-          className="border-2 border-black rounded-lg p-2 mt-2 font-bold hover:bg-black hover:text-white"
+          className="border-2 border-white rounded-lg p-2 mt-2 font-bold hover:bg-white hover:text-black"
           onClick={startNewGame}
         >
           Start a new game
