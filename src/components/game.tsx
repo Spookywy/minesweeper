@@ -202,7 +202,7 @@ export default function Game({
 
   return (
     <div className="text-center">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto select-none">
         <Board
           board={board}
           handleCellClick={handleCellClick}

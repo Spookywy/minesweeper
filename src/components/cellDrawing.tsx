@@ -40,6 +40,7 @@ export default function CellDrawing({
   };
 
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
     const timer = setTimeout(() => {
       onContextMenu(e);
       setPressTimer(null);
