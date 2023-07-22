@@ -1,6 +1,8 @@
 "use client";
 
 import Game from "@/components/game";
+import { faAngleDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ChangeEvent, useState } from "react";
 
 export default function Home() {
@@ -27,13 +29,23 @@ export default function Home() {
       <h1 className="bg-gradient-to-r bg-clip-text text-4xl font-bold text-transparent from-green-500 to-yellow-500">
         Minesweeper
       </h1>
-      <div className="flex justify-center my-5">
-        <p className="font-bold mr-3">Difficulty:</p>
-        <select onChange={changeDifficultySettings} className="text-black">
-          {Array.from(gameSettings.entries()).map(([difficulty, _], index) => {
-            return <option key={index}>{difficulty}</option>;
-          })}
-        </select>
+      <div className="flex justify-center items-center my-5">
+        <div className="relative">
+          <select
+            onChange={changeDifficultySettings}
+            className="h-10 w-36 pl-3 appearance-none rounded bg-neutral-700 text-neutral-100"
+          >
+            {Array.from(gameSettings.entries()).map(
+              ([difficulty, _], index) => {
+                return <option key={index}>{difficulty}</option>;
+              }
+            )}
+          </select>
+          <FontAwesomeIcon
+            icon={faAngleDown}
+            className="pointer-events-none absolute right-2 top-3 text-white"
+          />
+        </div>
       </div>
       <Game
         boardHeight={boardHeight}
