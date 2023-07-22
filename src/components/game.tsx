@@ -192,10 +192,12 @@ export default function Game({
 
   useEffect(() => {
     checkWinStatus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numberOfRevealedCell]);
 
   useEffect(() => {
     startNewGame();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardHeight, boardWidth, numberOfMines]);
 
   return (
