@@ -8,4 +8,4 @@ Minesweeper is a logic puzzle video game.
 
 ## Production
 
-The application is deployed at the following address: https://minesweeper-drab.vercel.app
+The application is deployed at the following address: https://minesweeper-pro.vercel.app/
