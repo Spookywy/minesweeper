@@ -1,0 +1,1 @@
+export const PERSONAL_WEBSITE_URL = "https://spookywy.github.io";

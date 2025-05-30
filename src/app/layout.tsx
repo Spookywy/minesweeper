@@ -2,6 +2,7 @@ import Footer from "@/components/footer";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "../styles/globals.css";
+import { Analytics } from '@vercel/analytics/next';
 config.autoAddCss = false;
 
 export default function RootLayout({
@@ -18,6 +19,7 @@ export default function RootLayout({
       <head />
       <body className="flex flex-col bg-neutral-900 h-full text-neutral-100">
         <div className="flex-grow">{children}</div>
+        <Analytics />
         <footer>
           <Footer />
         </footer>

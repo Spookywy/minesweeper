@@ -1,6 +1,7 @@
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {PERSONAL_WEBSITE_URL} from "@/utils/constants";
 
 export default function Footer() {
   return (
@@ -8,7 +9,7 @@ export default function Footer() {
       <p className="text-center">
         Made with
         <FontAwesomeIcon className="mr-2 ml-2" icon={faHeart} />
-        by <b>Valentin Menoret</b>
+          by <a href={PERSONAL_WEBSITE_URL}><b>Valentin Menoret</b></a>
       </p>
       <p className="hidden sm:block">&#8226;</p>
       <a
